@@ -6,21 +6,23 @@ import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.util.Scanner;
+
 public class src 
 {
 	Modem modem;
 	int k;
 
-	public src(String echoCode, String imageCode, String errorImageCode, String gpsCode, String ackCode, String nackCode)
+	public src(String echoCode, String imageCode, String errorImageCode, String gpsCode, String ackCode, String nackCode, String savePath)
 	{
 		this.modem = new Modem();
 		this.modem.setSpeed(80000);
 		this.modem.setTimeout(1000);
 		this.modem.open("ithaki");		
-//		packetResponses(echoCode + "\r");	
-//		image(imageCode +"\r", "Image");
-//		image(errorImageCode + "\r", "ErrorImage");
-//		gps(gpsCode +"R=1001090\r");
+		packetResponses(echoCode + "\r");	
+		image(imageCode +"\r", "Image", savePath);
+		image(errorImageCode + "\r", "ErrorImage", savePath);
+		gps(gpsCode +"R=1001090\r", savePath);
 		arq(ackCode +"\r", nackCode +"\r");
 		this.modem.close();
 	}
@@ -93,7 +95,7 @@ public class src
 		System.out.println(Arrays.toString(packetDelays.toArray()));
      }
 
-	private void image(String imageCode, String imageName)
+	private void image(String imageCode, String imageName, String savePath)
 	{
 		String modemResponse = "";
 		ArrayList<Byte> imageBytesList = new ArrayList<Byte>(); 
@@ -129,7 +131,7 @@ public class src
 						
 						ByteArrayInputStream inputStream = new ByteArrayInputStream(imageBytesArray); 
 						BufferedImage buffImage = ImageIO.read(inputStream); 
-						File file = new File("C:\\Users\\user\\Desktop\\AUTh\\6TH SEMESTER\\Δικτυα Υπολογιστων Ι\\Εργασια 2020\\" + imageName + ".jpeg");
+						File file = new File(savePath + imageName + ".jpeg");
 						ImageIO.write(buffImage, "jpeg", file);
 						System.out.println("Image saved to path");
 						break;
@@ -141,7 +143,7 @@ public class src
 		}
 	}
 	
-	private void gps(String gpsCode) 
+	private void gps(String gpsCode, String savePath) 
 	{
 		String gpsSentence = "";
 		this.modem.write(gpsCode.getBytes());
@@ -225,7 +227,7 @@ public class src
 				
 				    ByteArrayInputStream inputStream = new ByteArrayInputStream(gpsImageBytesArray);
 				    BufferedImage buffImage = ImageIO.read(inputStream);
-					File file = new File("C:\\Users\\user\\Desktop\\AUTh\\6TH SEMESTER\\Δικτυα Υπολογιστων Ι\\Εργασια 2020\\gps.jpeg");
+					File file = new File(savePath + "gps.jpeg");
 				    ImageIO.write(buffImage, "jpeg", file);
 				    System.out.println("GPS Image saved to path");
 				    break;
@@ -277,6 +279,16 @@ public class src
 	
 	public  static  void  main(String[]  args)  
 	{
-	     new  src("E4623","M2044","G2647","P1276","Q5754","R4885");
+
+		Scanner scanner = new Scanner(System.in);
+
+        // Prompt the user for the desired path
+        System.out.print("Enter the desired path for saving images: ");
+        String desiredPath = scanner.nextLine();
+
+	     new  src("E4623","M2044","G2647","P1276","Q5754","R4885", desiredPath);
+
+		// Close the scanner
+        scanner.close();
 	}
 }
