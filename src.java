@@ -13,20 +13,27 @@ public class src
 	Modem modem;
 	int k;
 
+	// Constructor initializes the modem, sets parameters, and performs various tasks
 	public src(String echoCode, String imageCode, String errorImageCode, String gpsCode, String ackCode, String nackCode, String savePath)
 	{
+		//Set up modem parameters
 		this.modem = new Modem();
 		this.modem.setSpeed(80000);
 		this.modem.setTimeout(1000);
-		this.modem.open("ithaki");		
+		this.modem.open("ithaki");	
+		
+		// Perform tasks using different codes taken from the ithaki webpage
 		packetResponses(echoCode + "\r");	
 		image(imageCode +"\r", "Image", savePath);
 		image(errorImageCode + "\r", "ErrorImage", savePath);
 		gps(gpsCode +"R=1001090\r", savePath);
 		arq(ackCode +"\r", nackCode +"\r");
+
+		// Close the modem connection
 		this.modem.close();
 	}
 	
+	// Sends packets and measures the response times
 	private boolean packet(String echoCode,boolean arqError)
 	{	
 		String echoPacket = "";
@@ -73,6 +80,7 @@ public class src
 		else {return true;}
 	}
 	
+	// Measure and display response times for sending packets
 	private  void  packetResponses(String  echoCode) 
 	{ 
 		ArrayList<Integer>  packetDelays  =  new  ArrayList<Integer>(); 
@@ -95,6 +103,7 @@ public class src
 		System.out.println(Arrays.toString(packetDelays.toArray()));
      }
 
+    // Captures and saves an image received through the modem
 	private void image(String imageCode, String imageName, String savePath)
 	{
 		String modemResponse = "";
@@ -143,6 +152,7 @@ public class src
 		}
 	}
 	
+	// Retrieves GPS information and captures a corresponding image
 	private void gps(String gpsCode, String savePath) 
 	{
 		String gpsSentence = "";
@@ -241,6 +251,8 @@ public class src
 		
 	}
 
+	// Implements Automatic Repeat reQuest (ARQ) protocol with acknowledgment and
+    // retransmission
 	private void arq(String AckCode, String NackCode) 
 	{	
 		long clk = System.currentTimeMillis();
@@ -285,8 +297,9 @@ public class src
         // Prompt the user for the desired path
         System.out.print("Enter the desired path for saving images: ");
         String desiredPath = scanner.nextLine();
-
-	     new  src("E4623","M2044","G2647","P1276","Q5754","R4885", desiredPath);
+		 
+		// Create an instance of the src class, initiating various tasks
+	    new  src("E4623","M2044","G2647","P1276","Q5754","R4885", desiredPath);
 
 		// Close the scanner
         scanner.close();
